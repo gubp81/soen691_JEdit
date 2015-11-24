@@ -1182,6 +1182,7 @@ public class EditPane extends JPanel implements BufferSetListener
 	
 		Runnable runnable = new Runnable()
 		{
+			@Override
 			public void run()
 			{
 				bufferSwitcher.updating = true;
