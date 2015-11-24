@@ -31,6 +31,7 @@ import java.awt.Graphics2D;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -1170,6 +1171,29 @@ public class EditPane extends JPanel implements BufferSetListener
 	} //}}}
 
 	//}}}
+
+	public void updateBufferList(final BufferSwitcher bufferSwitcher)
+	{
+		// if the buffer count becomes 0, then it is guaranteed to
+		// become 1 very soon, so don't do anything in that case.
+		final BufferSet bufferSet = getBufferSet();
+		if(bufferSet.size() == 0)
+			return;
+	
+		Runnable runnable = new Runnable()
+		{
+			public void run()
+			{
+				bufferSwitcher.updating = true;
+				bufferSwitcher.setMaximumRowCount(jEdit.getIntegerProperty("bufferSwitcher.maxRowCount",10));
+				bufferSwitcher.setModel(new DefaultComboBoxModel(bufferSet.getAllBuffers()));
+				bufferSwitcher.setSelectedItem(getBuffer());
+				bufferSwitcher.setToolTipText(getBuffer().getPath(true));
+				bufferSwitcher.updating = false;
+			}
+		};
+		ThreadUtilities.runInDispatchThread(runnable);
+	}
 
 	//{{{ StatusHandler class
 	class StatusHandler implements StatusListener
